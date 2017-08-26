@@ -14,7 +14,7 @@ if(x==="my-tweets"){
                 access_token_secret: keys.twitterKeys.access_token_secret
             });
 
-	var params = {screen_name: 'BillGates', count: 20};
+	var params = {screen_name: 'BillGates', count: 20}; //Look, these are Bill Gates' tweets, which are way more interesting than my fake Twitter account, but if you want those, then just put <newe_jen> in the user
 	client.get('statuses/user_timeline', params, function(error,tweets,response){
 		  if (!error) {
 	      console.log("\n---------------------------------------\n");
