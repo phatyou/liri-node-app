@@ -1,0 +1,177 @@
+var x = process.argv[2];//The reference (either "my-tweets", "movie-this", or "spotify-this-song"; not used in OMDB)
+var y = process.argv[3];//The query
+
+
+if(x==="my-tweets"){
+	var Twitter = require('twitter');
+
+	var keys = require("./keys.js");
+
+	var client = new Twitter({
+                consumer_key: keys.twitterKeys.consumer_key,
+                consumer_secret: keys.twitterKeys.consumer_secret,
+                access_token_key: keys.twitterKeys.access_token_key,
+                access_token_secret: keys.twitterKeys.access_token_secret
+            });
+
+	var params = {screen_name: 'BillGates', count: 20};
+	client.get('statuses/user_timeline', params, function(error,tweets,response){
+		  if (!error) {
+	      console.log("\n---------------------------------------\n");
+	  	  for(i = 0; i < params.count; i++){  	  	
+		      console.log("@" + tweets[i].user.screen_name);
+		      console.log("Tweet " + "#" + (i + 1) + ": " + tweets[i].text);
+		      console.log("Created: " + tweets[i].created_at + "\n");
+		  }
+		  console.log("\n---------------------------------------\n");
+	  	}
+	});
+}
+
+//Runs the Spotify API
+if(x==="spotify-this-song"){
+	var Spotify=require('node-spotify-api');
+
+	var spotify = new Spotify({
+  		id: "c8f9c16590344e52958c43c6c66267e4",
+  		secret: "01323ed470fe4a0eb339120d5591dd38"
+	});
+
+	if (y === null) {
+        y = "The Sign Ace of Base";
+        console.log(y);
+            };
+
+	spotify.search({type:'track',query:y},function(err,data){
+		if(err) {
+			console.log('Error occurred: ' + err);
+        	return;
+		// } else {
+		// 	y == "I+saw+the+sign"
+		// };
+ 		 // console.log(JSON.stringify(data, null, 2));
+		}
+    // Do something with 'data'
+   		for (var i=0; i < data.tracks.items.length || i<19; i++) {
+			console.log("Artist: "+data.tracks.items[i].artists[0].name);
+			console.log("Song Name: "+data.tracks.items[i].name);
+			console.log("Album: "+data.tracks.items[i].album.name);
+			console.log("Preview Link: "+data.tracks.items[i].preview_url);
+			console.log("");
+			console.log("-------------------------");
+			console.log("");}
+		});
+}
+//Ends the Spotify API 
+//**========================================================
+//Runs the OMDB API
+if(x==="movie-this"){
+	var request = require("request");
+	var queryUrl = "http://www.omdbapi.com/?t=" + y + "&y=&plot=short&apikey=40e9cece";
+	var country="";
+	var actors="";
+	
+	console.log(queryUrl);
+	console.log(y)
+	if (y === undefined) {
+		y = 'Mr. Nobody';
+		console.log(y);
+	};
+
+	request(queryUrl, function(error, response, body) {
+
+  	// If the request is successful (i.e. if the response status code is 200)
+  	if (!error && response.statusCode === 200) {
+
+  	var data = JSON.parse(body);
+  	// console.log(data);
+  	console.log(data);
+ 	console.log("Release Year: " + data.Year);
+	console.log("IMDB Rating: " + data.imdbRating);
+		if (data.Ratings[1].Value === undefined) {
+			console.log("There are no Ratings.")
+		} else {
+			console.log("Rotten Tomatoes Rating: " + data.Ratings[1].Value);
+		};
+
+	console.log("Language: " + data.Language);
+	console.log("Country: "+ data.Country);
+	console.log("Actors: "+ data.Actors);
+	console.log("Plot: " + data.Plot);
+	} else {
+		console.log("No Movie Results!")
+	};
+	});
+}
+
+if(x==='do-what-it-says'){
+	var fs = require("fs");
+
+	// function fetchRandom(){
+	//LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.
+	//Runs `spotify-this-song` for "I Want it That Way," as follows the text in `random.txt`.
+	fs.readFile("random.txt", 'utf8', function(err, data){
+
+		console.log(data);
+
+		//Creating an array from a string with split()
+		//Every comma, push the element into the array
+		var dataArr = data.split(',');
+
+		console.log(dataArr);
+
+		var randomUserCommand = dataArr[0];
+		var randomArtName = dataArr[1];
+		console.log(randomUserCommand);
+		console.log(dataArr[1]);
+
+		// randomArtName = y;
+
+		//Remove the quotes before making a request
+		// randomArtName = randomArtName.replace(/^"(.*)"$/, '$1');
+		// console.log(randomArtName);
+
+		randomUserCommand = x;
+		console.log(x);
+
+		randomArtName = y;
+		console.log(y);
+
+		//How do I pass the randomArtName arguments/parameters into the spofity thing?
+			if(x==="spotify-this-song"){
+			var Spotify=require('node-spotify-api');
+
+			var spotify = new Spotify({
+		  		id: "c8f9c16590344e52958c43c6c66267e4",
+		  		secret: "01323ed470fe4a0eb339120d5591dd38"
+			});
+
+			if (y === null) {
+		        y = "The Sign Ace of Base";
+		        console.log(y);
+		            };
+
+			spotify.search({type:'track',query:y},function(err,data){
+				if(err) {
+					console.log('Error occurred: ' + err);
+		        	return;
+				// } else {
+				// 	y == "I+saw+the+sign"
+				// };
+		 		 // console.log(JSON.stringify(data, null, 2));
+				}
+		    // Do something with 'data'
+		   		for (var i=0; i < data.tracks.items.length || i<19; i++) {
+					console.log("Artist: "+data.tracks.items[i].artists[0].name);
+					console.log("Song Name: "+data.tracks.items[i].name);
+					console.log("Album: "+data.tracks.items[i].album.name);
+					console.log("Preview Link: "+data.tracks.items[i].preview_url);
+					console.log("");
+					console.log("-------------------------");
+					console.log("");}
+				});
+		}
+		//Ends the Spotify API (AGAIN!)
+
+	});
+};
