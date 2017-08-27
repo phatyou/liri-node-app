@@ -14,7 +14,7 @@ function myTweets() {
                 access_token_secret: keys.twitterKeys.access_token_secret
             });
 
-	var params = {screen_name: 'BillGates', count: 20};
+	var params = {screen_name: 'BillGates', count: 20}; //I used Bill Gates' tweets because mine is boooorrrinng
 	client.get('statuses/user_timeline', params, function(error,tweets,response){
 		  if (!error) {
 	      console.log("\n---------------------------------------\n");
